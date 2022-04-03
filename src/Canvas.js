@@ -16,7 +16,7 @@ const Canvas = props => {
         
     }, []);
 
-    return <canvas ref={canvasRef} width = {props.width} height = {props.height} />
+    return <canvas title="canvas" ref={canvasRef} width = {props.width} height = {props.height} />
 }
 
 export default Canvas;

@@ -5,7 +5,7 @@ function App() {
   return (
     <div>
       <h1>"Welcome"</h1>
-      <Canvas width = {640} height = {480}/>
+      <Canvas title="canvas" width = {640} height = {480}/>
     </div>
     
   );
