@@ -1,7 +1,10 @@
 import Game from '../game';
 
 test('it can initiate game instance', () => {
-  const game = new Game();
+  let canvas = document.createElement("canvas");
+  let context = canvas.getContext("2d");
+  
+  const game = new Game(canvas, context);
 
   expect(game).toBeTruthy();
   expect(game).not.toBeNull();
