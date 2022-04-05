@@ -14,6 +14,7 @@ const Canvas = props => {
             context.canvas.height);
 
             let game = new Game(canvas, context);
+            game.start();
         }
         
     }, []);
