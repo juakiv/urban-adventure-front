@@ -1,16 +1,22 @@
+import Character from './Character';
+
 class Game {
   #canvas
   #context
-  #laskuri
+
   constructor(canvas, context) {
     this.#canvas = canvas;
     this.#context = context;
-    this.#laskuri = 0;
 
     this.render();
   }
 
+  start() {
+    //
+  }
+
   render() {
+    let character = new Character();
     requestAnimationFrame(() => this.render());
   }
 }
