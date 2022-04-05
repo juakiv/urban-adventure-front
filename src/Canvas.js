@@ -1,4 +1,5 @@
 import React, {useRef, useEffect } from 'react';
+import Game from './game';
 
 const Canvas = props => {
     const canvasRef = useRef(null);
@@ -10,12 +11,14 @@ const Canvas = props => {
         if(context != null) {
             context.fillStyle = '#000000';
             context.fillRect(0,0, context.canvas.width,
-            context.canvas.height)
+            context.canvas.height);
+
+            let game = new Game(canvas, context);
         }
         
     }, []);
 
-    return <canvas title="canvas" ref={canvasRef} width = {props.width} height = {props.height} />
+    return <canvas data-testid="canvas" ref={canvasRef} width = {props.width} height = {props.height} />
 }
 
 export default Canvas;
