@@ -14,10 +14,20 @@ class Character {
     this.#height = height;
     this.#characterWidth = 60;
     this.#characterHeight = 120;
+
+    this.#canvas.width = this.#characterWidth;
+    this.#canvas.height = this.#characterHeight;
+
+    this.draw();
   }
 
   draw() {
-    // this.#context.fillStyle = "#ff0000";
+    this.#context.fillStyle = "#ff0000";
+    this.#context.fillRect(0, 0, this.#characterWidth, this.#characterHeight);
+  }
+
+  getCharacter() {
+    return this.#canvas;
   }
 
 }

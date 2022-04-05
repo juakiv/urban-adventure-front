@@ -17,6 +17,7 @@ class Game {
 
   render() {
     let character = new Character();
+    this.#context.drawImage(character.getCharacter(), 10, 10);
     requestAnimationFrame(() => this.render());
   }
 }
