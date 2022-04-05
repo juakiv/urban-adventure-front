@@ -4,7 +4,6 @@ const Canvas = props => {
     const canvasRef = useRef(null);
 
     useEffect(() => {
-        const role = "canvas";
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
         
