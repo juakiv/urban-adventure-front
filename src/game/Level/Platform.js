@@ -31,7 +31,15 @@ class Platform {
     }
 
     draw() {
+        this.#context.beginPath();
+        this.#context.lineWidth = "4";
+        this.#context.strokeStyle = "red";
         this.#context.rect(this.getX(), this.getY(), this.getWidth(), this.#height);
+        this.#context.stroke();
+    }
+
+    moveInX(xToLeft) {
+        this.#xPosition-=xToLeft;
     }
 
 

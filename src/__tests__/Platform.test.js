@@ -23,4 +23,11 @@ describe("Tests about Platform's existence", () => {
     test("Does draw work?", () => {
         expect(platform.draw());
     });
+
+    test("Platform is moved correctly",() => {
+        const beforeMoving = platform.getX();
+        platform.moveInX(5); //moves platform to left
+        const afterMoving = platform.getX();
+        expect(afterMoving).toBe(beforeMoving-5);
+    });
 });

@@ -39,16 +39,24 @@ class Level {
 
   getNextPlatformHeight() {
     const isHigher = Math.random();
-    if(isHigher > 0.5) {
-      // JumpHeightille vakio, jotta helpompi yltää perille
-      return this.#platforms[this.#platforms.length-1].getY() - Math.random()*(0.8*this.#jumpHeight);
+    // alla suhteellinen poikkeama puolivälistä, jolla tasataan arvoja
+    const addedRelativePositionValue = (this.#platforms[this.#platforms.length-1].getY()/this.#canvas.height)-0.5;
+    
+    if(isHigher + addedRelativePositionValue > 0.5) {
+      // JumpHeightille vakiokerroin, jotta helpompi yltää perille
+      return this.#platforms[this.#platforms.length-1].getHeight() + Math.random()*(0.8*this.#jumpHeight);
     }
-    // jaetaan 2.3, jottei alin palikka ole liian alhaalla
-    return this.#platforms[this.#platforms.length-1].getY() + Math.random()*this.#canvas.height/2.3;
+     
+    const rndPart = Math.random()*this.#canvas.height
+    const controlledHeight = (rndPart < (this.#platforms[this.#platforms.length-1].getHeight())) ? (rndPart) : ((this.#platforms[this.#platforms.length-1].getHeight())/1.1);
+    return this.#platforms[this.#platforms.length-1].getHeight() - controlledHeight;
   }
 
-  getJumpDistance() {
-    return this.#speed * Math.sqrt(2 * this.#jumpHeight / this.#gravity);
+  getJumpDistance(lastHeight, nextHeight) {
+    // t jonka suhteen etäisyys pitää laskea määrittyy uuden palikan korkeudesta suhteessa vanhaan palikkaan
+    const tToTop = Math.sqrt(2 * (this.#jumpHeight + lastHeight) / this.#gravity);
+    const tFromTopToNext =  Math.sqrt(2 * ((this.#jumpHeight + lastHeight) - (nextHeight)) / this.#gravity);
+    return this.#speed * 24 * (tToTop + tFromTopToNext); // must be times fps
   }
 
   getNextWidth() {
@@ -56,23 +64,54 @@ class Level {
   }
 
   
-  #getNextXPosition() {
+  getNextXPosition(lastHeight, nextHeight) {
     const lastPlatform = this.#platforms[this.#platforms.length-1]
-    const endOfLastPlatform = lastPlatform.getX()+this.getNextWidth();
+    const endOfLastPlatform = lastPlatform.getX()+lastPlatform.getWidth();
     
-    return endOfLastPlatform + Math.random() * this.getJumpDistance();
+    return endOfLastPlatform + Math.random() * this.getJumpDistance(lastHeight, nextHeight);
   }
   
   createPlatforms() {
     while(this.#platforms[this.#platforms.length-1].getX() < this.#canvas.width) {
-      const nextPlatform = new Platform(this.getNextPlatformHeight(), this.getNextWidth(), this.#getNextXPosition(),
+      const nextHeight = this.getNextPlatformHeight();
+      let heightDifference = 0;
+      
+      let xPos = this.getNextXPosition(this.#platforms[this.#platforms.length-1].getHeight(), nextHeight);
+      
+      const nextPlatform = new Platform( nextHeight, this.getNextWidth(), xPos,
           this.#canvas);
       this.#platforms.push(nextPlatform);
     }
+    //console.log(this.#platforms.length);
+    
   }
 
   getPlatforms() {
     return this.#platforms;
+  }
+
+  draw() {
+    this.#platforms.forEach(p => {
+      p.draw();
+    });
+  }
+
+  movePlatformsInX() {
+    this.#platforms.forEach(p => {
+      p.moveInX(this.#speed);
+    });
+  }
+
+  removeOldPlatforms() {
+    for(let i = 0; i < this.#platforms.length; i++) {
+      const p = this.#platforms[i];
+      if((p.getX()+p.getWidth()) < 0) {
+        this.#platforms.shift(); // first index is always the left-most
+      } else {
+        //console.log(p.getX() + p.getWidth());
+        break;
+      }
+    }
   }
 
 
