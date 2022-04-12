@@ -41,11 +41,11 @@ class Game {
     this.#context.fillStyle = "#0000000";
     this.#context.fillRect(0,0, this.#context.canvas.width,
       this.#context.canvas.height);
-    //let character = new Character();
     this.#lvl.createPlatforms();
     this.#lvl.draw();
     this.#lvl.removeOldPlatforms();
     this.#lvl.movePlatformsInX();
+    this.#context.drawImage(this.#character.draw(), 10, this.#character.getPosY());
     requestAnimationFrame(() => this.render());
   }
 }
