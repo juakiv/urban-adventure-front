@@ -11,9 +11,10 @@ const Canvas = props => {
         if(context != null) {
             context.fillStyle = '#000000';
             context.fillRect(0,0, context.canvas.width,
-            context.canvas.height);
+                context.canvas.height);
 
             let game = new Game(canvas, context);
+            game.start();
         }
         
     }, []);
