@@ -3,7 +3,7 @@ import App from '../App';
 
 test('renders h1', () => {
   render(<App />);
-  const h1Element = screen.getByText(/Welcome/i);
+  const h1Element = screen.getByText(/Urban Adventure/i);
   expect(h1Element).toBeInTheDocument();
 });
 
