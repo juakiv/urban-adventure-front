@@ -67,7 +67,6 @@ class Character {
   getIsJumping() {
     return this.#isJumping;
   }
-
 }
 
 export default Character;
