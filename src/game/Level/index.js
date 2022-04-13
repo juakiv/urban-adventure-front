@@ -37,6 +37,10 @@ class Level {
     return this.#speed;
   }
 
+  setSpeed(newSpeed) {
+    this.#speed = newSpeed;
+  }
+
   getNextPlatformHeight() {
     const isHigher = Math.random();
     // alla suhteellinen poikkeama puolivälistä, jolla tasataan arvoja
@@ -111,6 +115,30 @@ class Level {
         //console.log(p.getX() + p.getWidth());
         break;
       }
+    }
+  }
+
+  isInPlatformsRange(x) {
+    for(let i = 0; i < this.#platforms.length; i++) {
+      if((x > this.#platforms[i].getX()) && (x < (this.#platforms[i].getX()+this.#platforms[i].getWidth()))) {
+        return i;
+      }
+    }
+    return null;
+  }
+
+  isOnAPlatform(y, i) {
+    if((y >= this.#platforms[i].getY()) && (y <= this.#platforms[i].getY()+4)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  shouldStopFalling(x, y) {
+    const idx = this.isInPlatformsRange(x);
+    if(idx != null) {
+      return this.isOnAPlatform(y, idx);
     }
   }
 

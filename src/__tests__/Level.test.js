@@ -22,6 +22,11 @@ describe("Does Level instance exist correctly",() => {
         expect(lvl.getJumpHeight()).toBe(5);
     });
 
+    test("Has correct speed after setting a new speed", () => {
+        lvl.setSpeed(20);
+        expect(lvl.getSpeed()).toBe(20);
+    });
+
     test("Has correct starting speed after initialization and gravitational acceleration",() =>{
         expect(lvl.getSpeed()).toBe(1);
         expect(lvl.getG()).toBe(0.2);
@@ -127,4 +132,39 @@ describe("Level functionality", () => {
         lvl.removeOldPlatforms();
         expect(platforms.find(p => p == firstPlatform)).not.toBeTruthy();
     });
+
+    test("Is coordinate in some platform's range in x direction", () => {
+        //is in range
+        const index = lvl.isInPlatformsRange(5);
+        expect(index).toBe(0);
+        //not in range
+        const index2 = lvl.isInPlatformsRange(170);
+        expect(index2).toBeNull();
+
+    });
+
+    test("Is y coordinate on a platform", () => {
+        //is on a platform
+        const isOnPlatform = lvl.isOnAPlatform(canvas.height-100,0);
+        expect(isOnPlatform).toBe(true);
+        
+        //not on a platform
+        const isNotOnPlatform = lvl.isOnAPlatform(canvas.height-200,0);
+        expect(isNotOnPlatform).toBeFalsy();
+
+        //is too low so not on a platform
+        const alsoNotOnPlatform = lvl.isOnAPlatform(canvas.height-95,0);
+        expect(alsoNotOnPlatform).toBeFalsy();
+    });
+
+    test("Should stop falling", () => {
+        const shouldStop = lvl.shouldStopFalling(50, canvas.height - 100);
+        expect(shouldStop).toBeTruthy();
+
+        const shouldNotStop = lvl.shouldStopFalling(50, canvas.height - 200);
+        expect(shouldNotStop).toBeFalsy();
+
+        const shouldNotStop2 = lvl.shouldStopFalling(200, canvas.height - 50);
+        expect(shouldNotStop2).toBeFalsy();
+    })
 })
