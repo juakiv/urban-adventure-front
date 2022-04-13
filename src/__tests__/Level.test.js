@@ -153,7 +153,7 @@ describe("Level functionality", () => {
         expect(isNotOnPlatform).toBeFalsy();
 
         //is too low so not on a platform
-        const alsoNotOnPlatform = lvl.isOnAPlatform(canvas.height-95,0);
+        const alsoNotOnPlatform = lvl.isOnAPlatform(canvas.height-94,0);
         expect(alsoNotOnPlatform).toBeFalsy();
     });
 
@@ -166,5 +166,11 @@ describe("Level functionality", () => {
 
         const shouldNotStop2 = lvl.shouldStopFalling(200, canvas.height - 50);
         expect(shouldNotStop2).toBeFalsy();
-    })
+    });
+
+    test("Is above a platform", () => {
+        expect(lvl.isAboveAPlatform(50, canvas.height - 200)).toBeTruthy();
+        expect(lvl.isAboveAPlatform(50, canvas.height - 50)).toBeFalsy();
+        
+    });
 })

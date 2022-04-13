@@ -33,23 +33,31 @@ class Character {
     image.src = "/tikkuukko.png";
   }
 
-  update() {
+  update(shouldStopFalling, posY) {
     if(this.#isJumping) {
       this.#deltaY -= 6;
       this.#posY += this.#deltaY;
       this.#deltaY = 0;
     } else {
-      this.#deltaY += this.#gravity;
-      this.#posY += this.#deltaY;
+      if(!shouldStopFalling) {
+        this.#deltaY += this.#gravity;
+        this.#posY += this.#deltaY;
+       } else if (this.#deltaY > 0) {
+         this.#deltaY = 0;
+         if(posY != null) {
+          this.#posY = posY-120;
+         }
+       }
+      
     }
 
-
-    if(this.#posY + this.#characterHeight >= 400) {
+    
+    if(this.#posY + this.#characterHeight >= 500) {
       this.#isJumping = false;
 
-      this.#posY = 400 - this.#characterHeight;
+      this.#posY = 500 - this.#characterHeight;
       this.#deltaY = 0;
-    }
+    } 
   }
 
   getPosY() {

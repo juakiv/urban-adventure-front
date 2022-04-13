@@ -10,23 +10,31 @@ class Game {
 
   #characterJumpPress;
   #characterJumpTimeout;
+  
+  #hasBeenOnTheGround;
+  #lastTimeWasAboveAPlatform;
 
   constructor(canvas, context) {
     this.#canvas = canvas;
     this.#context = context;
 
+    this.#hasBeenOnTheGround = true;
+    this.#lastTimeWasAboveAPlatform = true;
+
     this.#character = new Character(this.#canvas, this.#context);
 
     window.addEventListener("keypress", e => {
       if(this.#characterJumpPress) return false;
-
-      if(e.code === "Space") {
+      
+      if(e.code === "Space" && this.#hasBeenOnTheGround) {
         this.#character.setIsJumping(true);
+        this.#hasBeenOnTheGround = false;
         this.#characterJumpPress = true;
         this.#characterJumpTimeout = setTimeout(() => {
           this.#character.setIsJumping(false);
         }, 700); // kauanko pidetään pohjassa max
       }
+
     });
 
     window.addEventListener("keyup", e => {
@@ -59,7 +67,21 @@ class Game {
     this.#lvl.removeOldPlatforms();
     this.#lvl.movePlatformsInX();
 
-    this.#character.update();
+    
+    if(this.#lvl.isInPlatformsRange(10) == null) {
+      this.#hasBeenOnTheGround = false;
+    }
+    
+    let charYPos = null;
+    console.log(this.#character.getPosY())
+    if(this.#lastTimeWasAboveAPlatform && (!this.#hasBeenOnTheGround)) {
+      this.#hasBeenOnTheGround = !this.#lvl.isAboveAPlatform(10, this.#character.getPosY() + 120);
+      console.log("on the ground: " + this.#hasBeenOnTheGround);
+      charYPos = this.#lvl.getCurrentPlatformsY(10);
+    }
+    this.#lastTimeWasAboveAPlatform = this.#lvl.isAboveAPlatform(10, this.#character.getPosY() + 120);
+
+    this.#character.update(this.#hasBeenOnTheGround, charYPos)//this.#hasBeenOnTheGround, charYPos);
     if(this.#character.getCharacterImage()) this.#context.drawImage(this.#character.getCharacterImage(), 10, this.#character.getPosY());
 
     requestAnimationFrame(() => this.render());

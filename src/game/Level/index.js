@@ -127,8 +127,17 @@ class Level {
     return null;
   }
 
+  getCurrentPlatformsY(x) {
+    const idx = this.isInPlatformsRange(x);
+    if(idx != null) {
+      return this.#platforms[idx].getY();
+    }
+    return null;
+  }
+    
+
   isOnAPlatform(y, i) {
-    if((y >= this.#platforms[i].getY()) && (y <= this.#platforms[i].getY()+4)) {
+    if((y >= this.#platforms[i].getY()) && (y <= this.#platforms[i].getY()+5)) {
       return true;
     }
 
@@ -140,6 +149,17 @@ class Level {
     if(idx != null) {
       return this.isOnAPlatform(y, idx);
     }
+    return false;
+  }
+
+  
+
+  isAboveAPlatform(x, y) {
+    const idx = this.isInPlatformsRange(x);
+    if((idx != null) && (y < this.#platforms[idx].getY())) {
+      return true;
+    }
+    return false;
   }
 
 
