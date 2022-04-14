@@ -21,7 +21,7 @@ class Game {
   constructor(canvas, context) {
     this.#canvas = canvas;
     this.#context = context;
-    this.#hasEnded = false;
+    this.#hasEnded = true;
 
     this.#hasBeenOnTheGround = true;
     this.#lastTimeWasAboveAPlatform = true;
@@ -60,7 +60,15 @@ class Game {
   }
 
   start() {
-    // new Date();
+    this.#hasEnded = false;
+    this.#startTime = new Date().getTime();
+    this.#lastTime = this.#startTime;
+
+    this.#character = new Character(this.#canvas, this.#context);
+    this.#lvl = new Level(this.#canvas, this.#context, 100, 2, 120);
+    this.#hasBeenOnTheGround = true;
+
+    this.render();
   }
 
   /**
@@ -70,9 +78,11 @@ class Game {
     if(this.#hasEnded) {
       return false;
     }
+
     this.#context.clearRect(0,0, this.#canvas.width, this.#canvas.height);
     this.#context.fillStyle = "#0000000";
     this.#context.fillRect(0,0, this.#context.canvas.width, this.#context.canvas.height);
+
     this.#lvl.createPlatforms();
     this.#lvl.draw();
     this.#lvl.removeOldPlatforms();
@@ -88,9 +98,10 @@ class Game {
     //tänne pelin pysäytys, tämä testaamista varten
     if(((this.#character.getPosY()) > this.#canvas.height) || (this.#lvl.ranToAWall(10 + 15, this.#character.getPosY() + 120 ))) {
       this.#hasEnded = true;
-      //this.#character = new Character(this.#canvas, this.#context);
-      //this.#lvl = new Level(this.#canvas, this.#context, 100, 2, 120);
-      //this.#hasBeenOnTheGround = true; // jotta ei putoa aloitusplatformilta
+      window.dispatchEvent(new Event("death-event"));
+      // this.#character = new Character(this.#canvas, this.#context);
+      // this.#lvl = new Level(this.#canvas, this.#context, 100, 2, 120);
+      // this.#hasBeenOnTheGround = true; // jotta ei putoa aloitusplatformilta
     }
 
     
