@@ -33,7 +33,7 @@ class Character {
     image.src = "/tikkuukko.png";
   }
 
-  update(shouldStopFalling, posY) {
+  update(shouldStopFalling, newPosY) {
     if(this.#isJumping) {
       this.#deltaY -= 6;
       this.#posY += this.#deltaY;
@@ -44,20 +44,20 @@ class Character {
         this.#posY += this.#deltaY;
        } else if (this.#deltaY > 0) {
          this.#deltaY = 0;
-         if(posY != null) {
-          this.#posY = posY-120;
+         if(newPosY != null) {
+          this.#posY = newPosY-120;
          }
        }
       
     }
 
-    
+    /*
     if(this.#posY + this.#characterHeight >= 500) {
       this.#isJumping = false;
 
       this.#posY = 500 - this.#characterHeight;
       this.#deltaY = 0;
-    } 
+    }  */
   }
 
   getPosY() {

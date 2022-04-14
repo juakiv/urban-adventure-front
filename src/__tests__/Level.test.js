@@ -103,7 +103,6 @@ describe("Level functionality", () => {
         const xPos = lvl.getNextXPosition(100,0);
         expect(xPos).toBeGreaterThanOrEqual(160); // Next platform can start from the old one's ending point
         expect(xPos).toBeLessThan(160 + lvl.getJumpDistance(100, 0)); // 160 is the starting width
-        //console.log(xPos + " and max " +  (160 + lvl.getJumpDistance()));
     }); 
 
     test("Draw doesn't fail miserably", () => {
@@ -133,6 +132,7 @@ describe("Level functionality", () => {
         expect(platforms.find(p => p == firstPlatform)).not.toBeTruthy();
     });
 
+    
     test("Is coordinate in some platform's range in x direction", () => {
         //is in range
         const index = lvl.isInPlatformsRange(5);
@@ -169,8 +169,16 @@ describe("Level functionality", () => {
     });
 
     test("Is above a platform", () => {
-        expect(lvl.isAboveAPlatform(50, canvas.height - 200)).toBeTruthy();
-        expect(lvl.isAboveAPlatform(50, canvas.height - 50)).toBeFalsy();
-        
+        expect(lvl.isAboveAPlatform(50, canvas.height - 200)).toBe(1);
+        expect(lvl.isAboveAPlatform(50, canvas.height - 50)).toBe(0);
+        expect(lvl.isAboveAPlatform(-35, canvas.height - 200)).toBe(-1);
+    });
+
+    test("ran to a wall", () => {
+        // sets last x to be out of wall's starting
+        const collissionCheck = lvl.ranToAWall(-50, canvas.height - 90);
+        expect(collissionCheck).toBeFalsy();
+        const collissionCheck2 = lvl.ranToAWall(2, canvas.height - 90);
+        expect(collissionCheck2).toBeTruthy();
     });
 })

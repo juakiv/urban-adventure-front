@@ -10,6 +10,9 @@ class Level {
   #jumpHeight;
   #speed;
 
+  #lastX;
+  #lastY;
+
   constructor(canvas, context, jumpHeight, speed, gravity) {
       this.#canvas = canvas;
       this.#context = context; 
@@ -17,6 +20,8 @@ class Level {
       this.#speed = speed;
       this.#gravity = gravity;
       this.#platforms = [];
+      this.#lastX = null;
+      this.#lastY = null;
 
       // first platform shall be a constant in a constant height;
     const firstPlatform = new Platform(100, 160, 0, this.#canvas, this.#context);
@@ -78,7 +83,6 @@ class Level {
   createPlatforms() {
     while(this.#platforms[this.#platforms.length-1].getX() < this.#canvas.width) {
       const nextHeight = this.getNextPlatformHeight();
-      let heightDifference = 0;
       
       let xPos = this.getNextXPosition(this.#platforms[this.#platforms.length-1].getHeight(), nextHeight);
       
@@ -86,7 +90,7 @@ class Level {
           this.#canvas);
       this.#platforms.push(nextPlatform);
     }
-    //console.log(this.#platforms.length);
+    
     
   }
 
@@ -112,15 +116,16 @@ class Level {
       if((p.getX()+p.getWidth()) < 0) {
         this.#platforms.shift(); // first index is always the left-most
       } else {
-        //console.log(p.getX() + p.getWidth());
         break;
       }
     }
   }
 
+  // tarkistaa onko hahmo platformin sisältävällä x-alueella, lisätään vasemmalle pieni
+  // lisäalue + 30 (puolet hahmon leveydestä), jotta myös reunalle hyppääminen onnistuu järkevästi
   isInPlatformsRange(x) {
     for(let i = 0; i < this.#platforms.length; i++) {
-      if((x > this.#platforms[i].getX()) && (x < (this.#platforms[i].getX()+this.#platforms[i].getWidth()))) {
+      if((x + 30 > this.#platforms[i].getX()) && (x < (this.#platforms[i].getX()+this.#platforms[i].getWidth()))) {
         return i;
       }
     }
@@ -152,13 +157,36 @@ class Level {
     return false;
   }
 
-  
-
+  //1 jos platformin yllä, 0 jos platformin alla ja -1 jos ei platformia yllä tai alla
   isAboveAPlatform(x, y) {
     const idx = this.isInPlatformsRange(x);
-    if((idx != null) && (y < this.#platforms[idx].getY())) {
-      return true;
+    if((idx != null)) {
+      if((y < this.#platforms[idx].getY())) {
+        return 1;
+      } else {
+        return 0;
+      }
+      
     }
+    return -1;
+  }
+
+  ranToAWall(x, y) {
+    if(this.#lastX === null) {
+      this.#lastX = x;
+      this.#lastY = y;
+      return false;
+    }
+
+    const pIdx = this.isInPlatformsRange(x)
+    if(pIdx !== null) {
+      if((this.#platforms[pIdx].getY() < y) && (this.#platforms[pIdx].getY() < this.#lastY)) {
+        return true;
+      }
+    }
+
+    this.#lastX = x;
+    this.#lastY = y;
     return false;
   }
 

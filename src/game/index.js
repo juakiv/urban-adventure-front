@@ -2,9 +2,13 @@ import Character from './Character';
 import Level from './Level';
 
 class Game {
-  #canvas
-  #context
-  #character
+  #canvas;
+  #context;
+  #character;
+  #hasEnded;
+
+  #startTime;
+  #lastTime;
 
   #lvl;
 
@@ -17,14 +21,18 @@ class Game {
   constructor(canvas, context) {
     this.#canvas = canvas;
     this.#context = context;
+    this.#hasEnded = false;
 
     this.#hasBeenOnTheGround = true;
     this.#lastTimeWasAboveAPlatform = true;
 
+    this.#startTime = new Date().getTime();
+    this.#lastTime = this.#startTime;
+
     this.#character = new Character(this.#canvas, this.#context);
 
     window.addEventListener("keypress", e => {
-      if(this.#characterJumpPress) return false;
+      //if(this.#characterJumpPress) return false;
       
       if(e.code === "Space" && this.#hasBeenOnTheGround) {
         this.#character.setIsJumping(true);
@@ -36,7 +44,7 @@ class Game {
       }
 
     });
-
+    
     window.addEventListener("keyup", e => {
       if(e.code === "Space") {
         this.#character.setIsJumping(false);
@@ -46,7 +54,7 @@ class Game {
       }
     });
 
-    this.#lvl = new Level(this.#canvas, this.#context, 100, 2, 30);
+    this.#lvl = new Level(this.#canvas, this.#context, 100, 2, 120);
 
     this.render();
   }
@@ -59,6 +67,9 @@ class Game {
    * piirrä peli.
    */
   render() {
+    if(this.#hasEnded) {
+      return false;
+    }
     this.#context.clearRect(0,0, this.#canvas.width, this.#canvas.height);
     this.#context.fillStyle = "#0000000";
     this.#context.fillRect(0,0, this.#context.canvas.width, this.#context.canvas.height);
@@ -67,22 +78,38 @@ class Game {
     this.#lvl.removeOldPlatforms();
     this.#lvl.movePlatformsInX();
 
+    const newTime = new Date().getTime();
+    if((newTime - this.#lastTime) > 1000) {
+      this.#lastTime = newTime;
+      console.log("nopeus paivittyi");
+      this.#lvl.setSpeed(this.#lvl.getSpeed() + 0.01);
+    } 
+
+    //tänne pelin pysäytys, tämä testaamista varten
+    if(((this.#character.getPosY()) > this.#canvas.height) || (this.#lvl.ranToAWall(10 + 15, this.#character.getPosY() + 120 ))) {
+      this.#hasEnded = true;
+      //this.#character = new Character(this.#canvas, this.#context);
+      //this.#lvl = new Level(this.#canvas, this.#context, 100, 2, 120);
+      //this.#hasBeenOnTheGround = true; // jotta ei putoa aloitusplatformilta
+    }
+
     
-    if(this.#lvl.isInPlatformsRange(10) == null) {
+    if(!this.#lvl.shouldStopFalling(10, this.#character.getPosY() + 120)) {//this.#lvl.isInPlatformsRange(10) === null) {
       this.#hasBeenOnTheGround = false;
     }
     
     let charYPos = null;
-    console.log(this.#character.getPosY())
+
     if(this.#lastTimeWasAboveAPlatform && (!this.#hasBeenOnTheGround)) {
-      this.#hasBeenOnTheGround = !this.#lvl.isAboveAPlatform(10, this.#character.getPosY() + 120);
-      console.log("on the ground: " + this.#hasBeenOnTheGround);
+      this.#hasBeenOnTheGround = (this.#lvl.isAboveAPlatform(10, this.#character.getPosY() + 120)) === 0 ? true : false;
       charYPos = this.#lvl.getCurrentPlatformsY(10);
     }
-    this.#lastTimeWasAboveAPlatform = this.#lvl.isAboveAPlatform(10, this.#character.getPosY() + 120);
+    this.#lastTimeWasAboveAPlatform = (this.#lvl.isAboveAPlatform(10 , this.#character.getPosY() + 120)) === 1 ? true : false;
 
     this.#character.update(this.#hasBeenOnTheGround, charYPos)//this.#hasBeenOnTheGround, charYPos);
-    if(this.#character.getCharacterImage()) this.#context.drawImage(this.#character.getCharacterImage(), 10, this.#character.getPosY());
+    if(this.#character.getCharacterImage()) this.#context.drawImage(this.#character.getCharacterImage(), 10,
+         this.#character.getPosY());
+
 
     requestAnimationFrame(() => this.render());
   }
