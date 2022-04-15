@@ -41,6 +41,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: app-build
+          path: build
           
       - name: Deploy to Heroku
         uses: akhileshns/heroku-deploy@v3.12.12
