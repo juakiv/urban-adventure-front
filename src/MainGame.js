@@ -4,6 +4,7 @@ import Game from './game';
 const MainGame = props => {
     const canvasRef = useRef(null);
     const [game, setGame] = useState(null);
+    const [score, setScore] = useState(null);
 
     const [isGameRunning, setIsGameRunning] = useState(false);
     const [currentMenu, setCurrentMenu] = useState("main");
@@ -18,7 +19,7 @@ const MainGame = props => {
                 context.canvas.height);
             setGame(new Game(canvas, context));
 
-            window.addEventListener("death-event", e => {
+            window.addEventListener("death-event", () => {
                 setIsGameRunning(false);
                 setCurrentMenu("death");
             });
@@ -29,7 +30,7 @@ const MainGame = props => {
     const startGame = () => {
         setIsGameRunning(true);
         game.start();
-        game.setScoreFunction(props.scoreFunction);
+        game.setScoreFunction(setScore);
     }
 
 
@@ -37,17 +38,22 @@ const MainGame = props => {
     // kansioon ui
     return (
         <div id="main-game">
-            {!isGameRunning &&
+            {!isGameRunning ?
             <div id="ui">
                 {currentMenu === "main" && <div id="main-menu">
+                    <img src="/logo.png" alt="" />
                     <button onClick={() => startGame()}>Start Game</button>
                     <button onClick={() => alert("Kesken...")}>High Scores</button>
                 </div>}
                 {currentMenu === "death" && <div id="death-menu">
-                    <h2>hups...</h2>
+                    <img src="/oops.png" alt="" />
+                    <h2>Score: {score}</h2>
+                    <h2>tähän tulee lomake nimelle yms vielä</h2>
                     <button onClick={() => startGame()}>Restart Game</button>
                 </div>}
             </div>
+            :
+            <div id="score">Score: {score}</div>
             }
             <canvas data-testid="canvas" ref={canvasRef} width = {props.width} height = {props.height} />
         </div>

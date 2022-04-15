@@ -13,7 +13,26 @@ body, html {
   color: #ffffff;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+button {
+  padding: 14px 20px;
+  border-radius: 6px;
+  border: none;
+  background-color: #660808;
+  box-shadow: 0 3px 6px 0 rgba(0,0,0,0.3);
+  color: #ffffff;
+
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  font-size: 16px;
+  font-weight: 500;
 }
