@@ -10,6 +10,7 @@ class Character {
 
   #posY
   #deltaY
+  #jumpSlow
 
   #howManyTimes
 
@@ -26,6 +27,7 @@ class Character {
 
     this.#isJumping = false;
     this.#gravity = 0.2;
+    this.#jumpSlow = 11/42;
 
     this.#posY = 400 - this.#characterHeight;
     this.#deltaY = 0;
@@ -39,13 +41,19 @@ class Character {
 
   update(shouldStopFalling, newPosY) {
     if(this.#isJumping) {
+      //if(this.#deltaY >= 0) {
+      //  this.#deltaY = -12;
+      //}
       this.#deltaY -= 6;
       this.#posY += this.#deltaY;
+      //this.#deltaY += this.#jumpSlow;
       this.#deltaY = 0;
-      this.#howManyTimes++;
+
     } else {
-      console.log(this.#howManyTimes);
-      this.#howManyTimes = 0;
+      //if(this.#deltaY < 0) {
+      //  this.#deltaY = 0;
+      //}
+
       if(!shouldStopFalling) {
         this.#deltaY += this.#gravity;
         this.#posY += this.#deltaY;
