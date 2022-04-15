@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import App from '../App';
 
-test('renders h1', () => {
+test('renders start button', () => {
   render(<App />);
-  const h1Element = screen.getByText(/Urban Adventure/i);
-  expect(h1Element).toBeInTheDocument();
+  const button = screen.getByText(/Start Game/i);
+  expect(button).toBeInTheDocument();
 });
 
 test("Is there a Canvas", () => {
