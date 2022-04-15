@@ -25,9 +25,11 @@ const MainGame = props => {
         }
     }, []);
 
+
     const startGame = () => {
         setIsGameRunning(true);
         game.start();
+        game.setScoreFunction(props.scoreFunction);
     }
 
 

@@ -9,8 +9,10 @@ class Game {
 
   #startTime;
   #lastTime;
+  #functionToSetScore;
 
   #lvl;
+  #score;
 
   #characterJumpPress;
   #characterJumpTimeout;
@@ -55,8 +57,14 @@ class Game {
     });
 
     this.#lvl = new Level(this.#canvas, this.#context, 100, 2, 120);
+    this.#score = 0;
 
     this.render();
+  }
+
+  setScoreFunction(setScore) {
+    this.#functionToSetScore = setScore;
+    this.#functionToSetScore(0);
   }
 
   start() {
@@ -91,6 +99,7 @@ class Game {
     const newTime = new Date().getTime();
     if((newTime - this.#lastTime) > 1000) {
       this.#lastTime = newTime;
+      this.#functionToSetScore(this.#score++);
       console.log("nopeus paivittyi");
       this.#lvl.setSpeed(this.#lvl.getSpeed() + 0.01);
     } 
