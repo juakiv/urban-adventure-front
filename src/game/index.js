@@ -104,32 +104,33 @@ class Game {
       this.#lvl.setSpeed(this.#lvl.getSpeed() + 0.01);
     } 
 
-    //tänne pelin pysäytys, tämä testaamista varten
-    if(((this.#character.getPosY()) > this.#canvas.height) || (this.#lvl.ranToAWall(10 + 15, this.#character.getPosY() + 120 ))) {
-      this.#hasEnded = true;
-      window.dispatchEvent(new Event("death-event"));
-      // this.#character = new Character(this.#canvas, this.#context);
-      // this.#lvl = new Level(this.#canvas, this.#context, 100, 2, 120);
-      // this.#hasBeenOnTheGround = true; // jotta ei putoa aloitusplatformilta
-    }
-
     
-    if(!this.#lvl.shouldStopFalling(10, this.#character.getPosY() + 120)) {//this.#lvl.isInPlatformsRange(10) === null) {
+    if(!this.#lvl.shouldStopFalling(10, this.#character.getPosY() + 120)) {
       this.#hasBeenOnTheGround = false;
     }
     
     let charYPos = null;
 
     if(this.#lastTimeWasAboveAPlatform && (!this.#hasBeenOnTheGround)) {
-      this.#hasBeenOnTheGround = (this.#lvl.isAboveAPlatform(10, this.#character.getPosY() + 120)) === 0 ? true : false;
+      this.#hasBeenOnTheGround = (this.#lvl.isAboveAPlatform(10, this.#character.getPosY() + 120)) === 0;
       charYPos = this.#lvl.getCurrentPlatformsY(10);
     }
-    this.#lastTimeWasAboveAPlatform = (this.#lvl.isAboveAPlatform(10 , this.#character.getPosY() + 120)) === 1 ? true : false;
+    this.#lastTimeWasAboveAPlatform = (this.#lvl.isAboveAPlatform(10 , this.#character.getPosY() + 120)) === 1;
 
-    this.#character.update(this.#hasBeenOnTheGround, charYPos)//this.#hasBeenOnTheGround, charYPos);
-    if(this.#character.getCharacterImage()) this.#context.drawImage(this.#character.getCharacterImage(), 10,
-         this.#character.getPosY());
+    this.#character.update(this.#hasBeenOnTheGround, charYPos);    
 
+    //tänne pelin pysäytys, tämä testaamista varten
+    if(((this.#character.getPosY()) > this.#canvas.height) || (this.#lvl.ranToAWall(10 + 15, this.#character.getPosY() + 120 ))) {
+      this.#hasEnded = true;
+      this.#score = 0;
+      window.dispatchEvent(new Event("death-event"));
+      // this.#character = new Character(this.#canvas, this.#context);
+      // this.#lvl = new Level(this.#canvas, this.#context, 100, 2, 120);
+      // this.#hasBeenOnTheGround = true; // jotta ei putoa aloitusplatformilta
+    } 
+
+    if(this.#character.getCharacterImage()) { this.#context.drawImage(this.#character.getCharacterImage(), 10,
+      this.#character.getPosY())};
 
     requestAnimationFrame(() => this.render());
   }

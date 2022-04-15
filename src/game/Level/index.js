@@ -161,7 +161,7 @@ class Level {
   isAboveAPlatform(x, y) {
     const idx = this.isInPlatformsRange(x);
     if((idx != null)) {
-      if((y < this.#platforms[idx].getY())) {
+      if((y <= this.#platforms[idx].getY())) {
         return 1;
       } else {
         return 0;

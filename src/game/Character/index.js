@@ -11,11 +11,15 @@ class Character {
   #posY
   #deltaY
 
+  #howManyTimes
+
   #characterImage
 
   constructor(canvas, context) {
     this.#canvas = canvas;
     this.#context = context;
+
+    this.#howManyTimes = 0;
 
     this.#characterWidth = 60;
     this.#characterHeight = 120;
@@ -38,7 +42,10 @@ class Character {
       this.#deltaY -= 6;
       this.#posY += this.#deltaY;
       this.#deltaY = 0;
+      this.#howManyTimes++;
     } else {
+      console.log(this.#howManyTimes);
+      this.#howManyTimes = 0;
       if(!shouldStopFalling) {
         this.#deltaY += this.#gravity;
         this.#posY += this.#deltaY;
