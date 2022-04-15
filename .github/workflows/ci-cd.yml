@@ -1,0 +1,50 @@
+name: CI / CD
+
+concurrency: deployment
+
+on:
+  workflow_dispatch:
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+          cache: npm
+      
+      - name: Install, run tests and build
+        run: |
+          npm install
+          npm run test --if-present
+          npm run build --if-present
+      
+      - name: Upload build for deployment
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-build
+          path: build/
+  
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: 'juakiv/urban-adventure-back' # tää failaa varmaa heti, vaatii ehkä PAT:n
+      
+      - name: Download build from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: app-build
+          path: build/ # en oo ihan varma, voi olla et tulee build/build mut muutetaan tarvittaes
+      
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "urban-adventure-game"
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
