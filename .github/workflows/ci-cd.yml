@@ -50,4 +50,4 @@ jobs:
           heroku_app_name: "urban-adventure-game"
           heroku_email: ${{secrets.HEROKU_EMAIL}}
         env:
-          MONGODB_URI: ${{secrets.MONGODB_URI}}
+          HD_MONGODB_URI: ${{secrets.MONGODB_URI}}
