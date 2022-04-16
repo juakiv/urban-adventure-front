@@ -100,7 +100,6 @@ class Game {
     if((newTime - this.#lastTime) > 1000) {
       this.#lastTime = newTime;
       this.#functionToSetScore(this.#score++);
-      console.log("nopeus paivittyi");
       this.#lvl.setSpeed(this.#lvl.getSpeed() + 0.01);
     } 
 
@@ -124,9 +123,6 @@ class Game {
       this.#hasEnded = true;
       this.#score = 0;
       window.dispatchEvent(new Event("death-event"));
-      // this.#character = new Character(this.#canvas, this.#context);
-      // this.#lvl = new Level(this.#canvas, this.#context, 100, 2, 120);
-      // this.#hasBeenOnTheGround = true; // jotta ei putoa aloitusplatformilta
     } 
 
     if(this.#character.getCharacterImage()) { this.#context.drawImage(this.#character.getCharacterImage(), 10,

@@ -5,6 +5,8 @@ const MainGame = props => {
     const canvasRef = useRef(null);
     const [game, setGame] = useState(null);
     const [score, setScore] = useState(null);
+    const [username, setUsername] = useState("");
+    const [isNameValid, setIsNameValid] = useState(false);
 
     const [isGameRunning, setIsGameRunning] = useState(false);
     const [currentMenu, setCurrentMenu] = useState("main");
@@ -27,10 +29,35 @@ const MainGame = props => {
     }, []);
 
 
+    const handleNameChange = e => {
+        setUsername(e.target.value);
+    }
+
+    function submitHandling() {
+        if(!username.match(/\w+/)) {
+            alert("kelvoton nimi");
+            return;
+        }
+        
+        const socket = new WebSocket(`ws://${process.env.NODE_ENV === 'production' ? "urban-adventure-game.herokuapp.com" : "localhost:3001"}`);
+        socket.onopen = function(e) {
+            let userdata = JSON.stringify({ 
+                            "username" : username,
+                             "score" : score
+                            });
+            socket.send(userdata);
+            socket.close();
+            setIsNameValid(true);
+        } 
+        
+    }
+
+
     const startGame = () => {
         setIsGameRunning(true);
         game.start();
         game.setScoreFunction(setScore);
+        setIsNameValid(false);
     }
 
 
@@ -48,7 +75,24 @@ const MainGame = props => {
                 {currentMenu === "death" && <div id="death-menu">
                     <img src="/oops.png" alt="" />
                     <h2>Score: {score}</h2>
-                    <h2>tähän tulee lomake nimelle yms vielä</h2>
+                    {(!isNameValid) ? 
+                        <div>
+                        <label>
+                            Input your username:
+                            <input type="text" name="username" onChange={handleNameChange} />
+                        </label>
+                    
+                        <button onClick={submitHandling}>
+                            Submit
+                        </button>
+                    </div>
+                    :
+                    <label>
+                        TO HIGHSCORE BUTTON ... THINGS YET TO DO!
+                    </label>
+                    }
+                    
+            
                     <button onClick={() => startGame()}>Restart Game</button>
                 </div>}
             </div>
