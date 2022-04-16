@@ -79,6 +79,15 @@ class Game {
     this.render();
   }
 
+  pause() {
+    this.#hasEnded = true;
+  }
+
+  resume() {
+    this.#hasEnded = false;
+    this.render();
+  }
+
   /**
    * piirrä peli.
    */

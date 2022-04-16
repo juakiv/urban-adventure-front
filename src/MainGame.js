@@ -16,6 +16,7 @@ const MainGame = props => {
     const [scoresLoading, setScoresLoading] = useState(true);
 
     const [isGameRunning, setIsGameRunning] = useState(false);
+    const [isPaused, setIsPaused] = useState(false);
     const [currentMenu, setCurrentMenu] = useState("main");
 
     useEffect(() => {
@@ -25,7 +26,7 @@ const MainGame = props => {
         const ws = new WebSocket(`ws://${process.env.NODE_ENV === 'production' ? "urban-adventure-game.herokuapp.com" : "localhost:3001"}`);
         setSocket(ws);
 
-        ws.addEventListener("open", e => {
+        ws.addEventListener("open", _e => {
             setConnecting(false);
         });
 
@@ -79,6 +80,16 @@ const MainGame = props => {
         setIsNameValid(false);
     }
 
+    const pauseGame = () => {
+        game.pause();
+        setIsPaused(true);
+    }
+
+    const resumeGame = () => {
+        game.resume();
+        setIsPaused(false);
+    }
+
 
     // eri käyttöliittymän osat komponenteiks?
     // kansioon ui
@@ -119,26 +130,32 @@ const MainGame = props => {
                 </div>}
                 {!connecting && currentMenu === "death" && <div id="death-menu">
                     <img src="/oops.png" alt="" />
-                    <h2>Score: {score}</h2>
+                    <div id="score">Score: {score}</div>
                     {!isNameValid && score > 0 ? 
                     <>
-                        <label>
-                            Input your username:
-                            <input type="text" name="username" onChange={handleNameChange} />
-                        </label>
-                    
-                        <button onClick={() => submitHandling()}>
-                            Submit
-                        </button>
+                        <h2>Submit your score</h2>
+                        <div id="scoreinput-group">
+                            <input placeholder="Enter nickname..." type="text" name="username" onChange={handleNameChange} />
+                            <button onClick={() => submitHandling()}>
+                                Submit
+                            </button>            
+                        </div>
                     </>
-                    : <button onClick={() => requestLoadScores()}>Show High Scores</button>}
+                    : <button onClick={() => requestLoadScores()} style={{marginBottom: 20}}>Show High Scores</button>}
                     
             
                     <button onClick={() => startGame()}>Restart Game</button>
                 </div>}
             </div>
             :
-            <div id="score">Score: {score}</div>
+            <>
+                <div id="score">Score: {score}</div>
+                <div id="pause" onClick={() => pauseGame()}></div>
+                {isPaused &&<div id="pause-menu">
+                    <h2>Paused.</h2>
+                    <div id="resume" onClick={() => resumeGame()}></div>
+                </div>}
+            </>
             }
             <canvas data-testid="canvas" ref={canvasRef} width = {props.width} height = {props.height} />
         </div>
