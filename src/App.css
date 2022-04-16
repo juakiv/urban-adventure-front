@@ -9,7 +9,9 @@
 #main-game {
   position: relative;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+  height: 500px;
 }
 
 #ui {

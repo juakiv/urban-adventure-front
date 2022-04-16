@@ -39,9 +39,6 @@ const MainGame = props => {
         });
 
         if(context != null) {
-            context.fillStyle = '#000000';
-            context.fillRect(0,0, context.canvas.width,
-                context.canvas.height);
             setGame(new Game(canvas, context));
 
             window.addEventListener("death-event", () => {
