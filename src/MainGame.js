@@ -23,7 +23,7 @@ const MainGame = props => {
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
 
-        const ws = new WebSocket(`ws://${process.env.NODE_ENV === 'production' ? "urban-adventure-game.herokuapp.com" : "localhost:3001"}`);
+        const ws = new WebSocket(`${process.env.NODE_ENV === 'production' ? "wss://urban-adventure-game.herokuapp.com" : "ws://localhost:3001"}`);
         setSocket(ws);
 
         ws.addEventListener("open", _e => {
