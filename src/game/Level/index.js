@@ -14,19 +14,18 @@ class Level {
   #lastY;
 
   constructor(canvas, context, jumpHeight, speed, gravity) {
-      this.#canvas = canvas;
-      this.#context = context; 
-      this.#jumpHeight = jumpHeight;
-      this.#speed = speed;
-      this.#gravity = gravity;
-      this.#platforms = [];
-      this.#lastX = null;
-      this.#lastY = null;
+    this.#canvas = canvas;
+    this.#context = context; 
+    this.#jumpHeight = jumpHeight;
+    this.#speed = speed;
+    this.#gravity = gravity;
+    this.#platforms = [];
+    this.#lastX = null;
+    this.#lastY = null;
 
       // first platform shall be a constant in a constant height;
-    const firstPlatform = new Platform(100, 160, 0, this.#canvas, this.#context);
-    this.#platforms.push(firstPlatform);
-      
+    const firstPlatform = new Platform(100, 160, 0, this.#canvas, this.#context, true);
+    this.#platforms.push(firstPlatform);   
   }
 
   getJumpHeight() {
@@ -86,8 +85,7 @@ class Level {
       
       let xPos = this.getNextXPosition(this.#platforms[this.#platforms.length-1].getHeight(), nextHeight);
       
-      const nextPlatform = new Platform( nextHeight, this.getNextWidth(), xPos,
-          this.#canvas);
+      const nextPlatform = new Platform(nextHeight, this.getNextWidth(), xPos, this.#canvas, this.#context);
       this.#platforms.push(nextPlatform);
     }
     
@@ -111,8 +109,8 @@ class Level {
   }
 
   removeOldPlatforms() {
-    for(let i = 0; i < this.#platforms.length; i++) {
-      const p = this.#platforms[i];
+    for(const element of this.#platforms) {
+      const p = element;
       if((p.getX()+p.getWidth()) < 0) {
         this.#platforms.shift(); // first index is always the left-most
       } else {
@@ -142,11 +140,7 @@ class Level {
     
 
   isOnAPlatform(y, i) {
-    if((y >= this.#platforms[i].getY()) && (y <= this.#platforms[i].getY()+5)) {
-      return true;
-    }
-
-    return false;
+    return (y >= this.#platforms[i].getY()) && (y <= this.#platforms[i].getY()+5);
   }
 
   shouldStopFalling(x, y) {

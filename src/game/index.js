@@ -130,10 +130,18 @@ class Game {
       this.#hasEnded = true;
       this.#score = 0;
       window.dispatchEvent(new Event("death-event"));
-    } 
+    }
 
-    if(this.#character.getCharacterImage()) { this.#context.drawImage(this.#character.getCharacterImage(), 10,
-      this.#character.getPosY())};
+    if(this.#lvl.isInPlatformsRange(10) !== null && this.#lvl.getPlatforms()[this.#lvl.isInPlatformsRange(10)].hasCoin() && this.#hasBeenOnTheGround) {
+      let currentPlatformStanding = this.#lvl.getPlatforms()[this.#lvl.isInPlatformsRange(10)];
+      currentPlatformStanding.setHasCoin(false);
+      this.#score = this.#score + currentPlatformStanding.getCoinValue();
+      this.#functionToSetScore(this.#score);
+    }
+
+    if(this.#character.getCharacterImage()) {
+      this.#context.drawImage(this.#character.getCharacterImage(), 10, this.#character.getPosY());
+    }
 
     requestAnimationFrame(() => this.render());
   }
