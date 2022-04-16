@@ -13,7 +13,6 @@ class Game {
 
   #lvl;
   #score;
-  #nightBg;
 
   #characterJumpPress;
   #characterJumpTimeout;
@@ -57,12 +56,6 @@ class Game {
       }
     });
 
-    let nightbg = new Image();
-    nightbg.onload = () => {
-      this.#nightBg = nightbg;
-    }
-    nightbg.src = "/nightbg.png";
-
     this.#lvl = new Level(this.#canvas, this.#context, 100, 2, 120);
     this.#score = 0;
 
@@ -104,7 +97,6 @@ class Game {
     }
 
     this.#context.clearRect(0,0, this.#canvas.width, this.#canvas.height);
-    if(this.#nightBg) this.#context.drawImage(this.#nightBg, 0, 0);
 
     this.#lvl.createPlatforms();
     this.#lvl.draw();
