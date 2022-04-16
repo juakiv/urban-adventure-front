@@ -12,6 +12,9 @@ const MainGame = props => {
     const [username, setUsername] = useState("");
     const [isNameValid, setIsNameValid] = useState(false);
 
+    const [scores, setScores] = useState([]);
+    const [scoresLoading, setScoresLoading] = useState(true);
+
     const [isGameRunning, setIsGameRunning] = useState(false);
     const [currentMenu, setCurrentMenu] = useState("main");
 
@@ -24,6 +27,14 @@ const MainGame = props => {
 
         ws.addEventListener("open", e => {
             setConnecting(false);
+        });
+
+        ws.addEventListener("message", e => {
+            let message = JSON.parse(e.data);
+            if(message["messageType"] === "scores") {
+                setScores(message["scores"]);
+                setScoresLoading(false);
+            }
         });
 
         if(context != null) {
@@ -44,15 +55,20 @@ const MainGame = props => {
         setUsername(e.target.value);
     }
 
-    function submitHandling() {
+    const submitHandling = () => {
         if(!username.match(/\w+/)) {
             alert("Kelvoton nimi");
             return;
         }
 
-        let userdata = JSON.stringify({"username" : username, "score" : score });
+        let userdata = JSON.stringify({type: "addScore", username, score});
         socket.send(userdata);
         setIsNameValid(true); 
+    }
+
+    const requestLoadScores = () => {
+        socket.send(JSON.stringify({type: "showScores"}));
+        setCurrentMenu("scores");
     }
 
 
@@ -76,7 +92,30 @@ const MainGame = props => {
                 {!connecting && currentMenu === "main" && <div id="main-menu">
                     <img src="/logo.png" alt="" />
                     <button onClick={() => startGame()}>Start Game</button>
-                    <button onClick={() => alert("Kesken...")}>High Scores</button>
+                    <button onClick={() => requestLoadScores()}>High Scores</button>
+                </div>}
+                {!connecting && currentMenu === "scores" && <div id="scoreboard-menu">
+                    <img src="/scores.png" alt="" />
+
+                    {scoresLoading ? <h2>Loading Scores...</h2> :
+                    <div id="scoreboard">
+                        <div id="scoreboard-head">
+                            <div class="scoreboard-cell" style={{maxWidth: 40}}>#</div>
+                            <div class="scoreboard-cell">Name</div>
+                            <div class="scoreboard-cell" style={{maxWidth: 100}}>Score</div>
+                        </div>
+                        <div id="scoreboard-body">
+
+                            {scores.map(e =>
+                            <div class="scoreboard-row" key={e.index}>
+                                <div class="scoreboard-cell" style={{maxWidth: 40}}>{e.index}</div>
+                                <div class="scoreboard-cell">{e.name}</div>
+                                <div class="scoreboard-cell" style={{maxWidth: 100}}>{e.score}</div>
+                            </div>
+                            )}
+                        </div>
+                    </div>}
+                    <button onClick={() => {setScoresLoading(true); setCurrentMenu("main")}}>Back</button>
                 </div>}
                 {!connecting && currentMenu === "death" && <div id="death-menu">
                     <img src="/oops.png" alt="" />
@@ -92,7 +131,7 @@ const MainGame = props => {
                             Submit
                         </button>
                     </>
-                    : <button onClick={() => alert("Kesken...")}>Show High Scores</button>}
+                    : <button onClick={() => requestLoadScores()}>Show High Scores</button>}
                     
             
                     <button onClick={() => startGame()}>Restart Game</button>
