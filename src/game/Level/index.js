@@ -1,17 +1,25 @@
 import Platform from "./Platform";
 
+/**
+ * Hoitaa tason luonnin ja siihen kohdistuvan vuorovaikutuksen käsittelyn
+ */
 class Level {
   #canvas;
   #context;
-  #gravity;
+  #gravity; // nykyisessä toteutuksessa tasapainotettava arvo, jotta luotavat platformit halutulla välillä
   
-  #platforms;
+  #platforms; // lista kunkin hetken käytössä olevista platformeista
 
-  #jumpHeight;
-  #speed;
+  #jumpHeight; // nykyisessä toteutuksessa tasapainotettava arvo, jotta luotavat platformit halutulla välillä
+  #speed; // nykyisessä toteutuksessa tasapainotettava arvo, jotta luotavat platformit halutulla välillä
 
-  #lastX;
-  #lastY;
+  #lastX; // edellinen testattu x-koordinaatti, seuraa hahmon liikettä, jotta osaa arvioida pelin päättymistä
+  #lastY; // edellinen testattu y-koordinaatti, seuraa hahmon liikettä, jotta osaa arvioida pelin päättymistä
+
+  /**
+   * 
+   * @pre canvas != null && context != null && jumpHeight > 0 && speed > 0 && gravity > 0
+   */
 
   constructor(canvas, context, jumpHeight, speed, gravity) {
       this.#canvas = canvas;
@@ -23,11 +31,13 @@ class Level {
       this.#lastX = null;
       this.#lastY = null;
 
-      // first platform shall be a constant in a constant height;
+      // Ensimmäinen Platformi on aina vakiopaikalla
     const firstPlatform = new Platform(100, 160, 0, this.#canvas, this.#context);
     this.#platforms.push(firstPlatform);
       
   }
+
+  // tavallisia gettereitä
 
   getJumpHeight() {
       return this.#jumpHeight;
@@ -42,10 +52,18 @@ class Level {
     return this.#speed;
   }
 
+  /**
+   * Asettaa nopeuden. Nopeutta muuttamalla myös platformien etäisyydet toisistaan kasvavat
+   */
   setSpeed(newSpeed) {
     this.#speed = newSpeed;
   }
 
+  /**
+   * Tuottaa vaihtelevia korkeuksia canvasilla, joita käytetään Platformien luontiin.
+   * Pyrkii huomioimaan edellisen platformin korkeuden tehdäkseen saavutettavia sijainteja
+   * @returns seuraavan luotavan platformin korkeus
+   */
   getNextPlatformHeight() {
     const isHigher = Math.random();
     // alla suhteellinen poikkeama puolivälistä, jolla tasataan arvoja
@@ -56,23 +74,40 @@ class Level {
       return this.#platforms[this.#platforms.length-1].getHeight() + Math.random()*(0.8*this.#jumpHeight);
     }
      
-    const rndPart = Math.random()*this.#canvas.height
+    const rndPart = Math.random()*this.#canvas.height;
     const controlledHeight = (rndPart < (this.#platforms[this.#platforms.length-1].getHeight())) ? (rndPart) : ((this.#platforms[this.#platforms.length-1].getHeight())/1.1);
-    return this.#platforms[this.#platforms.length-1].getHeight() - controlledHeight;
+    // lisätään 20 korkeuteen, jotta matalinkin näkyisi ainakin vähän
+    return this.#platforms[this.#platforms.length-1].getHeight() - controlledHeight + 20;
   }
 
+  /**
+   * Arvio siitä kuinka pitkälle hyppy voi yltää
+   * @parameters lastHeight kertoo lähtökorkeuden pudotukselle && nextHeight kertoo päätöskorkeuden pudotukselle
+   * @returns etäisyys, jolle hypyllä voisi enintään päästä
+   */
   getJumpDistance(lastHeight, nextHeight) {
     // t jonka suhteen etäisyys pitää laskea määrittyy uuden palikan korkeudesta suhteessa vanhaan palikkaan
     const tToTop = Math.sqrt(2 * (this.#jumpHeight + lastHeight) / this.#gravity);
     const tFromTopToNext =  Math.sqrt(2 * ((this.#jumpHeight + lastHeight) - (nextHeight)) / this.#gravity);
-    return this.#speed * 24 * (tToTop + tFromTopToNext); // must be times fps
+    return this.#speed * 24 * (tToTop + tFromTopToNext); // nopeudelle vain päätetty käypä kerroin
   }
 
+  /**
+   * Seuraavan Platformin leveys
+   * @pre canvas oltava ainakin 240px leveä...
+   * @post RESULT >= 60;
+   * @returns antaa satunnaisen leveyden seuraavalle Platformille
+   */
   getNextWidth() {
     return 60 + Math.random() * (this.#canvas.width/4 - 60);
   }
 
-  
+  /**
+   * Määrittää seuraavan Platformin vasemman reunan x-koordinaatin
+   * edellisen oikeanpuoleisen reunan ja hyppypituuden perusteella
+   * @parameters lastHeight kertoo lähtökorkeuden pudotukselle && nextHeight kertoo päätöskorkeuden pudotukselle
+   * @returns jonkin verran x-koordinaatti (seuraavalle Platformille)
+   */
   getNextXPosition(lastHeight, nextHeight) {
     const lastPlatform = this.#platforms[this.#platforms.length-1]
     const endOfLastPlatform = lastPlatform.getX()+lastPlatform.getWidth();
@@ -80,6 +115,11 @@ class Level {
     return endOfLastPlatform + Math.random() * this.getJumpDistance(lastHeight, nextHeight);
   }
   
+  /**
+   * Luo Platformeja kunnes viimeisimmän Platformin aloituskoordinaatti ei enää mahdu canvasille
+   * Luotujen Platformien määrä riippuu saavutetusta vauhdista (kuinka monta platformia mahtuu canvasille) ja sattumasta
+   * @post (RESULT.#platforms.length >= BEFORE.#platforms.length)
+   */
   createPlatforms() {
     while(this.#platforms[this.#platforms.length-1].getX() < this.#canvas.width) {
       const nextHeight = this.getNextPlatformHeight();
@@ -98,18 +138,27 @@ class Level {
     return this.#platforms;
   }
 
+  /**
+   * Kutsuu jokaiselle Platformille niiden omaa draw()-funktio toteutusta
+   */
   draw() {
     this.#platforms.forEach(p => {
       p.draw();
     });
   }
 
+  /**
+   * Kutsuu jokaiselle Platformille niiden moveInX() toteutusta ja liikuttaa Platformeja kentän nopeuden mukaisesti
+   */
   movePlatformsInX() {
     this.#platforms.forEach(p => {
       p.moveInX(this.#speed);
     });
   }
 
+  /**
+   * Poistaa ne platformit, jotka ovat jotka ovat kokonaan poistuneet canvasilta
+   */
   removeOldPlatforms() {
     for(let i = 0; i < this.#platforms.length; i++) {
       const p = this.#platforms[i];
@@ -121,8 +170,14 @@ class Level {
     }
   }
 
-  // tarkistaa onko hahmo platformin sisältävällä x-alueella, lisätään vasemmalle pieni
-  // lisäalue + 30 (puolet hahmon leveydestä), jotta myös reunalle hyppääminen onnistuu järkevästi
+  /**
+   * 
+   * Tarkistaa onko hahmo platformin sisältävällä x-alueella, lisätään vasemmalle pieni
+   * lisäalue + 30 (puolet hahmon leveydestä), jotta myös reunalle hyppääminen onnistuu järkevämmin
+   * 
+   * @returns (null, jos x-koordinaatissa ei Platformia) && (platformin indeksin this.#platforms:ssa jos ollaan Platformin kohdalla)
+   */
+  
   isInPlatformsRange(x) {
     for(let i = 0; i < this.#platforms.length; i++) {
       if((x + 30 > this.#platforms[i].getX()) && (x < (this.#platforms[i].getX()+this.#platforms[i].getWidth()))) {
@@ -132,6 +187,11 @@ class Level {
     return null;
   }
 
+  /**
+   * 
+   * Palauttaa nykyisen platformin y-koordinaatin x-koordinaatin perusteella
+   * @returns (null, jos ei platformia x:n kohdassa) && (platformin y muulloin)
+   */
   getCurrentPlatformsY(x) {
     const idx = this.isInPlatformsRange(x);
     if(idx != null) {
@@ -140,7 +200,9 @@ class Level {
     return null;
   }
     
-
+  /**
+   * Kertoo ollaanko juuri platformin päällä
+   */
   isOnAPlatform(y, i) {
     if((y >= this.#platforms[i].getY()) && (y <= this.#platforms[i].getY()+5)) {
       return true;
@@ -149,6 +211,9 @@ class Level {
     return false;
   }
 
+  /**
+   * Palauttaa onko juuri näissä koordinaateissa platformin yläosaa
+   */
   shouldStopFalling(x, y) {
     const idx = this.isInPlatformsRange(x);
     if(idx != null) {
@@ -157,7 +222,11 @@ class Level {
     return false;
   }
 
-  //1 jos platformin yllä, 0 jos platformin alla ja -1 jos ei platformia yllä tai alla
+  /**
+   * 
+   * Kertoo ollaanko pudottu Platformin läpi
+   * @returns (1 jos platformin yllä) && (0 jos platformin alla) && (-1 jos ei platformia yllä tai alla)
+   */
   isAboveAPlatform(x, y) {
     const idx = this.isInPlatformsRange(x);
     if((idx != null)) {
@@ -171,6 +240,12 @@ class Level {
     return -1;
   }
 
+  /**
+   * Kertoo törmättiinkö seinään
+   * Käyttää edellisiä x- ja y-koordinaatteja ja vertaa niitä uusiin ja platformien sijainteihin
+   * @returns (true, jos edellinen ja nykyinen y-koordinaatti on x:n kohdalla olevan platformin alla) &&
+   *      (false, jos x:n kohdalla ei ole platformia tai ei oltu platformin alla)
+   */
   ranToAWall(x, y) {
     if(this.#lastX === null) {
       this.#lastX = x;
