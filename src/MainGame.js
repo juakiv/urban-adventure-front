@@ -1,6 +1,10 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Game from './game';
 
+/**
+ * Komponentti, joka seuraa pelin tilaa ja esittää käyttäjälle tilan mukaisen tiedon
+ * On yhteydessä palvelimeen
+ */
 const MainGame = props => {
     const canvasRef = useRef(null);
 
@@ -48,11 +52,16 @@ const MainGame = props => {
         }
     }, []);
 
-
+    /**
+     * Nimimerkin syöttämiseen käytetty käsittelyfunktio
+     */
     const handleNameChange = e => {
         setUsername(e.target.value);
     }
 
+    /**
+     * Käsittelee syötetyt arvot ja lähettää kelvollisen nimimerkin tapauksessa palvelimelle
+     */
     const submitHandling = () => {
         if(!username.match(/\w+/)) {
             alert("Kelvoton nimi");
@@ -64,12 +73,17 @@ const MainGame = props => {
         setIsNameValid(true); 
     }
 
+    /**
+     * Aiempien tulosten haku ja siirtyminen pisteiden tarkasteluun
+     */
     const requestLoadScores = () => {
         socket.send(JSON.stringify({type: "showScores"}));
         setCurrentMenu("scores");
     }
 
-
+    /**
+     * Aloittaa pelin
+     */
     const startGame = () => {
         setIsGameRunning(true);
         game.start();
@@ -77,11 +91,17 @@ const MainGame = props => {
         setIsNameValid(false);
     }
 
+    /**
+     * Siirtää pelin tauolle
+     */
     const pauseGame = () => {
         game.pause();
         setIsPaused(true);
     }
 
+    /**
+     * Jatkaa peliä tauolta
+     */
     const resumeGame = () => {
         game.resume();
         setIsPaused(false);
