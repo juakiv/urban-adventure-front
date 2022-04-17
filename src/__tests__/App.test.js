@@ -3,8 +3,8 @@ import App from '../App';
 
 test('renders start button', () => {
   render(<App />);
-  const button = screen.getByText(/Start Game/i);
-  expect(button).toBeInTheDocument();
+  const connecting = screen.getByText(/Connecting to the server.../i);
+  expect(connecting).toBeInTheDocument();
 });
 
 test("Is there a Canvas", () => {

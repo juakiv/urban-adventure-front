@@ -22,17 +22,17 @@ class Level {
    */
 
   constructor(canvas, context, jumpHeight, speed, gravity) {
-      this.#canvas = canvas;
-      this.#context = context; 
-      this.#jumpHeight = jumpHeight;
-      this.#speed = speed;
-      this.#gravity = gravity;
-      this.#platforms = [];
-      this.#lastX = null;
-      this.#lastY = null;
+    this.#canvas = canvas;
+    this.#context = context; 
+    this.#jumpHeight = jumpHeight;
+    this.#speed = speed;
+    this.#gravity = gravity;
+    this.#platforms = [];
+    this.#lastX = null;
+    this.#lastY = null;
 
       // Ensimmäinen Platformi on aina vakiopaikalla
-    const firstPlatform = new Platform(100, 160, 0, this.#canvas, this.#context);
+    const firstPlatform = new Platform(100, 160, 0, this.#canvas, this.#context, true);
     this.#platforms.push(firstPlatform);
       
   }
@@ -126,8 +126,7 @@ class Level {
       
       let xPos = this.getNextXPosition(this.#platforms[this.#platforms.length-1].getHeight(), nextHeight);
       
-      const nextPlatform = new Platform( nextHeight, this.getNextWidth(), xPos,
-          this.#canvas);
+      const nextPlatform = new Platform(nextHeight, this.getNextWidth(), xPos, this.#canvas, this.#context);
       this.#platforms.push(nextPlatform);
     }
     
@@ -160,8 +159,8 @@ class Level {
    * Poistaa ne platformit, jotka ovat jotka ovat kokonaan poistuneet canvasilta
    */
   removeOldPlatforms() {
-    for(let i = 0; i < this.#platforms.length; i++) {
-      const p = this.#platforms[i];
+    for(const element of this.#platforms) {
+      const p = element;
       if((p.getX()+p.getWidth()) < 0) {
         this.#platforms.shift(); // first index is always the left-most
       } else {
@@ -204,11 +203,7 @@ class Level {
    * Kertoo ollaanko juuri platformin päällä
    */
   isOnAPlatform(y, i) {
-    if((y >= this.#platforms[i].getY()) && (y <= this.#platforms[i].getY()+5)) {
-      return true;
-    }
-
-    return false;
+    return (y >= this.#platforms[i].getY()) && (y <= this.#platforms[i].getY()+5);
   }
 
   /**
@@ -247,14 +242,16 @@ class Level {
    *      (false, jos x:n kohdalla ei ole platformia tai ei oltu platformin alla)
    */
   ranToAWall(x, y) {
+    // onko vielä olemassa edellistä
     if(this.#lastX === null) {
       this.#lastX = x;
       this.#lastY = y;
       return false;
     }
-
+    // onko x:n suunnassa Platformin kohdalla
     const pIdx = this.isInPlatformsRange(x)
     if(pIdx !== null) {
+      // onko platformin alapuolella
       if((this.#platforms[pIdx].getY() < y) && (this.#platforms[pIdx].getY() < this.#lastY)) {
         return true;
       }

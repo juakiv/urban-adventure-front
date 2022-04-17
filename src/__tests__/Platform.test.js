@@ -8,7 +8,7 @@ describe("Tests about Platform's existence", () => {
         canvas = document.createElement("canvas");
         canvas.width = 700;
         canvas.height = 500;
-        platform = new Platform(100, 80, 0, canvas);
+        platform = new Platform(100, 80, 0, canvas, canvas.getContext("2d"));
     });
 
     test("Is there a platform", () => {

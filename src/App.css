@@ -9,7 +9,13 @@
 #main-game {
   position: relative;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+  height: 500px;
+}
+
+#main-game canvas {
+  background-image: url("../public/nightbg.png");
 }
 
 #ui {
@@ -27,6 +33,43 @@
   display: flex;
   justify-content: flex-end;
   pointer-events: none;
+  font-size: 22px;
+  font-weight: 600;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+
+#pause {
+  position: absolute;
+  top: 70px;
+  right: 25px;
+  border-style: double;
+  border-color: transparent transparent transparent white;
+  border-width: 0 0 0 30px;
+  width: 0;
+  height: 30px;
+  cursor: pointer;
+}
+
+#resume {
+  border-style: solid;
+  border-color: transparent transparent transparent white;
+  border-width: 25px 0 25px 40px;
+  width: 0;
+  height: 40px;
+  cursor: pointer;
+}
+
+#pause-menu {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.7);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 #ui > div[id] {
@@ -34,7 +77,7 @@
   height: 100%;
 }
 
-#main-menu, #death-menu {
+#main-menu, #death-menu, #scoreboard-menu {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -46,7 +89,7 @@
   margin: 10px 0;
 }
 
-#main-menu img, #death-menu img {
+#main-menu img, #death-menu img, #scoreboard-menu img {
   filter: drop-shadow(0 6px 0px rgb(99, 21, 21));
   margin-bottom: 50px;
 }
@@ -54,4 +97,60 @@
 #death-menu h2 {
   margin: 0 0 20px;
   text-shadow: 0 3px 8px rgba(0,0,0,0.6);
+}
+
+#scoreboard {
+  width: 400px;
+  margin-bottom: 20px;
+}
+
+#scoreboard-body {
+  overflow: auto;
+  width: 100%;
+  max-height: 200px;
+  scrollbar-width: none;
+}
+
+#scoreboard-body::-webkit-scrollbar {
+  display: none;
+}
+
+#scoreboard-head {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+#scoreboard-head, .scoreboard-row {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.scoreboard-cell {
+  flex: 1;
+  text-align: center;
+  background-color: rgba(0,0,0,0.5);
+  backdrop-filter: blur(3px);
+  border-radius: 6px;
+  margin: 2px;
+  padding: 6px 12px;
+}
+
+#scoreinput-group {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 20px;
+  width: 400px;
+}
+
+#scoreinput-group input {
+  border-radius: 6px 0 0 6px;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  padding: 10px 15px;
+  flex: 1;
+}
+
+#scoreinput-group button {
+  border-radius: 0 6px 6px 0;
 }
