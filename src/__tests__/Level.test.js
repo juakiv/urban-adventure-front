@@ -56,8 +56,8 @@ describe("Level functionality", () => {
             const nextHeight = level.getNextPlatformHeight();
             
         
-            expect(nextHeight).toBeLessThan((100) + 0.8 * level.getJumpHeight());
-            expect(nextHeight).toBeGreaterThan(0); // first platform's height
+            expect(nextHeight).toBeLessThan((100) + 0.8 * level.getJumpHeight() + 20);
+            expect(nextHeight).toBeGreaterThan(20); // alin hyväksytty korkeus
         }
     });
 
