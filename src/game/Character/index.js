@@ -1,3 +1,6 @@
+/**
+ * liikuteltava hahmo
+ */
 class Character {
   #canvas
   #context
@@ -16,6 +19,10 @@ class Character {
 
   #characterImage
 
+  /**
+   * 
+   * @pre canvas != null && context != null
+   */
   constructor(canvas, context) {
     this.#canvas = canvas;
     this.#context = context;
@@ -39,7 +46,13 @@ class Character {
     image.src = "/tikkuukko.png";
   }
 
+  /**
+   * Updatee hahmoa: onko hyppäämässä, pitäisikö hypyn loppua?
+   * @parameters shouldStopFalling : boolean
+   * @parameters newPosY : (jos ei enää hypätä, niin tällä arvolla platformin yläosn ylittänyt hahmo asettuu yläosaan)
+   */
   update(shouldStopFalling, newPosY) {
+    //hyppy
     if(this.#isJumping) {
       //if(this.#deltaY >= 0) {
       //  this.#deltaY = -12;
@@ -48,21 +61,22 @@ class Character {
       this.#posY += this.#deltaY;
       //this.#deltaY += this.#jumpSlow;
       this.#deltaY = 0;
-
+    //putoaminen
     } else {
       //if(this.#deltaY < 0) {
       //  this.#deltaY = 0;
       //}
-
+      //Jos putoaminen vielä jatkuu
       if(!shouldStopFalling) {
         this.#deltaY += this.#gravity;
         this.#posY += this.#deltaY;
-       } else if (this.#deltaY > 0) {
+        // Jos putoaminen ei jatku, mutta vielä on valmista muutosnopeutta
+      } else if (this.#deltaY > 0) {
          this.#deltaY = 0;
          if(newPosY != null) {
           this.#posY = newPosY-120;
          }
-       }
+      }
       
     }
 
@@ -75,6 +89,8 @@ class Character {
     }  */
   }
 
+  //getterit
+  
   getPosY() {
     return this.#posY;
   }
