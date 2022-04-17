@@ -77,21 +77,26 @@ describe("Level functionality", () => {
     });
 
     test("Test that Platforms currently in screen are created and they are in order according to their x-value", () => {
-        lvl.createPlatforms();
-        let last = null;
-        const platforms = lvl.getPlatforms();
-        for(let i = 0; i < platforms.length; i++) {
-            if ((last != null) && (i != (platforms.length -1) )) {
-                expect(platforms[i].getX()).toBeGreaterThan(last);
-                expect(platforms[i].getX()).toBeLessThan(canvas.width);
-            }
-            
-            if(i == platforms.length - 1) {
-                expect(platforms[i].getX()).toBeGreaterThan(canvas.width);
-            }
-            
-            last = platforms[i].getX();
+        
 
+        for(let i = 0; i < 1000; i++) {
+            const lvl = new Level(canvas, context, 5, 1, 0.2);
+            lvl.createPlatforms();
+            let last = null;
+            const platforms = lvl.getPlatforms();
+            for(let i = 0; i < platforms.length; i++) {
+                if ((last !== null) && (i !== (platforms.length -1) )) {
+                    expect(platforms[i].getX()).toBeGreaterThan(last);
+                    expect(platforms[i].getX()).toBeLessThan(canvas.width);
+                }
+            
+                if(i === (platforms.length - 1)) {
+                    expect(platforms[i].getX()).toBeGreaterThan(canvas.width);
+                }
+            
+                last = platforms[i].getX();
+
+            }
         }
         
     });
