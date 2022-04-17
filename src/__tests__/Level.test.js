@@ -6,6 +6,7 @@ describe("Does Level instance exist correctly",() => {
     let canvas;
     let context;
     let lvl;
+    // Joka testille tarvitaan canvas, sen context ja lvl-instanssi
     beforeEach(() => {
         canvas = document.createElement("canvas");
         context = canvas.getContext("2d");
@@ -40,6 +41,8 @@ describe("Level functionality", () => {
     let canvas
     let context;
     let lvl;
+
+    // Joka testille tarvitaan canvas, sen context ja lvl-instanssi
     beforeEach(() => {
         canvas = document.createElement("canvas");
         context = canvas.getContext("2d");
@@ -58,11 +61,11 @@ describe("Level functionality", () => {
         }
     });
 
-    //currently I defined "okay" as a value starting from character width to 1/4 of canvas.width
+    //Hyväksytyt arvot tällä hetkellä alle 1/4 koko canvasin leveydestä ja vähintään 60
     test("Gives acceptable width for the next platform", () => {
         const nextWidth = lvl.getNextWidth();
         expect(nextWidth).toBeLessThan(canvas.width/4);
-        expect(nextWidth).toBeGreaterThanOrEqual(60); //current character width
+        expect(nextWidth).toBeGreaterThanOrEqual(60); //nykyinen hahmon leveys
         
     });
 
@@ -70,10 +73,10 @@ describe("Level functionality", () => {
         // when jumpHeight is 5, speed is 1 and g is 0.2 and initial height is 100 and last height is 0
         const tToTop = Math.sqrt((2 * (100 + 5))/ 0.2) // starting height is 100, end is 5
         const tToBottom = Math.sqrt((2*(100+5 - 0))/ 0.2); // startheight is 105, end is 0
-        expect(lvl.getJumpDistance(100,0)).toBe(lvl.getSpeed() * 24 * (tToTop + tToBottom)); // 24 is fps used in test
+        expect(lvl.getJumpDistance(100,0)).toBe(lvl.getSpeed() * 24 * (tToTop + tToBottom)); // 24 is a coefficient used
     });
 
-    test("Test that Platforms currently in screen are created and the are in order according to their x-value", () => {
+    test("Test that Platforms currently in screen are created and they are in order according to their x-value", () => {
         lvl.createPlatforms();
         let last = null;
         const platforms = lvl.getPlatforms();
@@ -94,8 +97,8 @@ describe("Level functionality", () => {
     });
 
     
-    //Position should be such that at least from one point of a current platform
-    // the next platform can be reached
+    //Uuden Platformin vasemmanpuoleisen x-koordinaatin arvo vastaa alkuperäisen ajatuksen
+    // mukaista etäisyyttä, jolle hahmo voisi yltää hyppäämään
     test("Gives acceptable new x-position for the next platform", () => {
         
         //next xPosition of a Platform relative to the position before
@@ -124,7 +127,7 @@ describe("Level functionality", () => {
         lvl.createPlatforms();
         const platforms = lvl.getPlatforms();
         const firstPlatform = platforms[0];
-        // first platform is 160px wide so this gets it out of the canvas
+        // ensimmäinen platformi on 160 leveä, vauhti = 1, eli testataan, että se poistuu, kun siirretty ulos
         for(let i = 0; i < 162; i++) {
             lvl.movePlatformsInX();
         } 
@@ -175,7 +178,8 @@ describe("Level functionality", () => {
     });
 
     test("ran to a wall", () => {
-        // sets last x to be out of wall's starting
+        // Testaa ensimmäisen (valmiiksi luodun) platformin kanssa. Ensimmäinen kutsu asettaa edellisen (x,y)-parin ja toisessa
+        // nähdään, että arvot menivät seinän läpi
         const collissionCheck = lvl.ranToAWall(-50, canvas.height - 90);
         expect(collissionCheck).toBeFalsy();
         const collissionCheck2 = lvl.ranToAWall(2, canvas.height - 90);
