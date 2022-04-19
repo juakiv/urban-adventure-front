@@ -11,7 +11,8 @@ const MainGame = props => {
     const [socket, setSocket] = useState(null);
     const [connecting, setConnecting] = useState(true);
     const [pingPong, setPingPong] = useState(true);
-    const [reconnect, setReconnect] = useState(0);
+    const [reconnect, setReconnect] = useState(null);
+    const [reconnectCounter, setReconnectCounter] = useState(0);
 
     const [game, setGame] = useState(null);
     const [score, setScore] = useState(null);
@@ -30,21 +31,36 @@ const MainGame = props => {
         const context = canvas.getContext('2d');
 
         const ws = new WebSocket(`${process.env.NODE_ENV === 'production' ? "wss://urban-adventure-game.herokuapp.com" : "ws://localhost:3001"}`);
-        setSocket(ws);
+        if(ws) setSocket(ws);
+
+        if(context != null) {
+            setGame(new Game(canvas, context));
+
+            window.addEventListener("death-event", () => {
+                setIsGameRunning(false);
+                setIsPaused(false);
+                setCurrentMenu("death");
+            });
+        }
+    }, [reconnect]);
+
+    useEffect(() => {
+        if(!socket) return false;
 
         // yhteyden avautuessa
-        ws.addEventListener("open", _e => {
-            setConnecting(false);
-            setReconnect(0);
-
-            setPingPong(setInterval(() => {
-                ws.send(JSON.stringify({type: "ping"}));
-            }, 10000));
-
+        socket.addEventListener("open", _e => {
+            setReconnectCounter(0);
+            if(socket.readyState === WebSocket.OPEN) {
+                setConnecting(false);
+                let pingPongInterval = setInterval(() => {
+                    if(socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify({type: "ping"}));
+                }, 1000);
+                setPingPong(pingPongInterval);
+            }
         });
 
         // kuunnellaan websocket-viestejä
-        ws.addEventListener("message", e => {
+        socket.addEventListener("message", e => {
             let message = JSON.parse(e.data);
             if(message["messageType"] === "scores") {
                 setScores(message["scores"]);
@@ -52,28 +68,21 @@ const MainGame = props => {
             }
         });
         
-        // koitetaan yhdistää uudelleen 3 kertaa,
+        // koitetaan yhdistää uudelleen 5 kertaa,
         // jos yhteys katkeaa
-        ws.addEventListener("close", _e => {
-            console.log(`reconnection attempt ${reconnect + 1}`);
+        socket.addEventListener("close", _e => {
             setConnecting(true);
-            if(reconnect < 3) setReconnect(reconnectionCounter => reconnectionCounter + 1);
-        });
+            setSocket(null);
 
-        if(context != null) {
-            setGame(new Game(canvas, context));
-
-            window.addEventListener("death-event", () => {
-                setIsGameRunning(false);
-                setCurrentMenu("death");
-            });
-        }
-
-        return () => {
-            ws.close();
             clearInterval(pingPong);
-        }
-    }, [reconnect]);
+            setPingPong(null);
+            
+            if(reconnectCounter < 5) {
+                setReconnectCounter(counter => counter + 1);
+                setReconnect(new Date());
+            }
+        });
+    }, [socket]);
 
     /**
      * Nimimerkin syöttämiseen käytetty käsittelyfunktio
