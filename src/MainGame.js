@@ -35,6 +35,7 @@ const MainGame = props => {
         // yhteyden avautuessa
         ws.addEventListener("open", _e => {
             setConnecting(false);
+            setReconnect(0);
 
             setPingPong(setInterval(() => {
                 ws.send(JSON.stringify({type: "ping"}));
