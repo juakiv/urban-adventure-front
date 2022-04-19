@@ -10,7 +10,7 @@ const MainGame = props => {
 
     const [socket, setSocket] = useState(null);
     const [connecting, setConnecting] = useState(true);
-    const [pingPong, setPingPong] = useState(true);
+    const [pingPong, setPingPong] = useState(null);
     const [reconnect, setReconnect] = useState(null);
     const [reconnectCounter, setReconnectCounter] = useState(0);
 
@@ -52,10 +52,13 @@ const MainGame = props => {
             setReconnectCounter(0);
             if(socket.readyState === WebSocket.OPEN) {
                 setConnecting(false);
-                let pingPongInterval = setInterval(() => {
-                    if(socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify({type: "ping"}));
-                }, 1000);
-                setPingPong(pingPongInterval);
+
+                if(!pingPong) {
+                    let pingPongInterval = setInterval(() => {
+                        socket.send(JSON.stringify({type: "ping"}));
+                    }, 10000);
+                    setPingPong(pingPongInterval);
+                }
             }
         });
 
@@ -82,6 +85,7 @@ const MainGame = props => {
                 setReconnect(new Date());
             }
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [socket]);
 
     /**
