@@ -31,8 +31,11 @@ describe("it renders correct content", () => {
         expect(connecting).toBeInTheDocument();
 
         await server.connected;
-        const gameStart = screen.getByTestId("game-start");        
-        expect(gameStart).toBeInTheDocument();
+    
+        const gameStart = screen.getByTestId("game-start");
+        expect(gameStart).toBeInTheDocument();     
+        
+       
         
     });
 });

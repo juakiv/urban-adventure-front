@@ -25,6 +25,7 @@ const MainGame = props => {
     const [isGameRunning, setIsGameRunning] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
     const [currentMenu, setCurrentMenu] = useState("main");
+    
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -86,6 +87,11 @@ const MainGame = props => {
                 setReconnect(new Date());
             }
         });
+
+        return () => {
+            // This is the cleanup function
+            socket.removeEventListener("open", setReconnectCounter);
+          }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [socket]);
 
