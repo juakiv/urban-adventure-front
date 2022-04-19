@@ -10,6 +10,8 @@ const MainGame = props => {
 
     const [socket, setSocket] = useState(null);
     const [connecting, setConnecting] = useState(true);
+    const [pingPong, setPingPong] = useState(true);
+    const [reconnect, setReconnect] = useState(0);
 
     const [game, setGame] = useState(null);
     const [score, setScore] = useState(null);
@@ -30,16 +32,31 @@ const MainGame = props => {
         const ws = new WebSocket(`${process.env.NODE_ENV === 'production' ? "wss://urban-adventure-game.herokuapp.com" : "ws://localhost:3001"}`);
         setSocket(ws);
 
+        // yhteyden avautuessa
         ws.addEventListener("open", _e => {
             setConnecting(false);
+
+            setPingPong(setInterval(() => {
+                ws.send(JSON.stringify({type: "ping"}));
+            }, 10000));
+
         });
 
+        // kuunnellaan websocket-viestejä
         ws.addEventListener("message", e => {
             let message = JSON.parse(e.data);
             if(message["messageType"] === "scores") {
                 setScores(message["scores"]);
                 setScoresLoading(false);
             }
+        });
+        
+        // koitetaan yhdistää uudelleen 3 kertaa,
+        // jos yhteys katkeaa
+        ws.addEventListener("close", _e => {
+            console.log(`reconnection attempt ${reconnect + 1}`);
+            setConnecting(true);
+            if(reconnect < 3) setReconnect(reconnectionCounter => reconnectionCounter + 1);
         });
 
         if(context != null) {
@@ -50,7 +67,12 @@ const MainGame = props => {
                 setCurrentMenu("death");
             });
         }
-    }, []);
+
+        return () => {
+            ws.close();
+            clearInterval(pingPong);
+        }
+    }, [reconnect]);
 
     /**
      * Nimimerkin syöttämiseen käytetty käsittelyfunktio
@@ -128,17 +150,17 @@ const MainGame = props => {
                     {scoresLoading ? <h2>Loading Scores...</h2> :
                     <div id="scoreboard">
                         <div id="scoreboard-head">
-                            <div class="scoreboard-cell" style={{maxWidth: 40}}>#</div>
-                            <div class="scoreboard-cell">Name</div>
-                            <div class="scoreboard-cell" style={{maxWidth: 100}}>Score</div>
+                            <div className="scoreboard-cell" style={{maxWidth: 40}}>#</div>
+                            <div className="scoreboard-cell">Name</div>
+                            <div className="scoreboard-cell" style={{maxWidth: 100}}>Score</div>
                         </div>
                         <div id="scoreboard-body">
 
                             {scores.map(e =>
-                            <div class="scoreboard-row" key={e.index}>
-                                <div class="scoreboard-cell" style={{maxWidth: 40}}>{e.index}</div>
-                                <div class="scoreboard-cell">{e.name}</div>
-                                <div class="scoreboard-cell" style={{maxWidth: 100}}>{e.score}</div>
+                            <div className="scoreboard-row" key={e.index}>
+                                <div className="scoreboard-cell" style={{maxWidth: 40}}>{e.index}</div>
+                                <div className="scoreboard-cell">{e.name}</div>
+                                <div className="scoreboard-cell" style={{maxWidth: 100}}>{e.score}</div>
                             </div>
                             )}
                         </div>
