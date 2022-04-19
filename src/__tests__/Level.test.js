@@ -72,7 +72,7 @@ describe("Level functionality", () => {
     test("Returns correct possible jump distance", () => {
         // when jumpHeight is 5, speed is 1 and g is 0.2 and initial height is 100 and last height is 0
         const tToTop = Math.sqrt((2 * (100 + 5))/ 0.2) // starting height is 100, end is 5
-        const tToBottom = Math.sqrt((2*(100+5 - 0))/ 0.2); // startheight is 105, end is 0
+        const tToBottom = Math.sqrt((2*(100+20+5 - 0))/ 0.2); // startheight is 105, 20 is added because of minimum height, end is 0
         expect(lvl.getJumpDistance(100,0)).toBe(lvl.getSpeed() * 24 * (tToTop + tToBottom)); // 24 is a coefficient used
     });
 

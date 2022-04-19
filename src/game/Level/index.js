@@ -88,7 +88,8 @@ class Level {
   getJumpDistance(lastHeight, nextHeight) {
     // t jonka suhteen etäisyys pitää laskea määrittyy uuden palikan korkeudesta suhteessa vanhaan palikkaan
     const tToTop = Math.sqrt(2 * (this.#jumpHeight + lastHeight) / this.#gravity);
-    const tFromTopToNext =  Math.sqrt(2 * Math.abs((this.#jumpHeight + lastHeight) - (nextHeight)) / this.#gravity);
+    // 20 tulee lisätystä minimikorkeuslisästä
+    const tFromTopToNext =  Math.sqrt(2 * ((this.#jumpHeight + lastHeight + 20) - (nextHeight)) / this.#gravity);
     return this.#speed * 24 * (tToTop + tFromTopToNext); // nopeudelle vain päätetty käypä kerroin
   }
 
