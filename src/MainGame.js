@@ -111,15 +111,15 @@ const MainGame = props => {
     // eri käyttöliittymän osat komponenteiks?
     // kansioon ui
     return (
-        <div id="main-game">
+        <div id="main-game" data-testid="main-game">
             {!isGameRunning ?
-            <div id="ui">
+            <div id="ui" data-testid="ui">
                 {connecting && <div id="main-menu">
                     <h2>Connecting to the server...</h2>
                 </div>}
                 {!connecting && currentMenu === "main" && <div id="main-menu">
                     <img src="/logo.png" alt="" />
-                    <button onClick={() => startGame()}>Start Game</button>
+                    <button data-testid="game-start" onClick={() => startGame()}>Start Game</button>
                     <button onClick={() => requestLoadScores()}>High Scores</button>
                 </div>}
                 {!connecting && currentMenu === "scores" && <div id="scoreboard-menu">
@@ -166,7 +166,7 @@ const MainGame = props => {
             </div>
             :
             <>
-                <div id="score">Score: {score}</div>
+                <div id="score" data-testid="score">Score: {score}</div>
                 <div id="pause" onClick={() => pauseGame()}></div>
                 {isPaused &&<div id="pause-menu">
                     <h2>Paused.</h2>

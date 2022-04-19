@@ -110,11 +110,12 @@ class Game {
     this.render();
   }
 
+
   /**
    * Pelin looppi
    */
   render() {
-    //Älä piirrä jos ohi
+    //Älä päivitä jos ohi/paussilla
     if(this.#hasEnded) {
       return false;
     }

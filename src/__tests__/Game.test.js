@@ -1,11 +1,23 @@
+import { wait } from '@testing-library/user-event/dist/utils';
 import Game from '../game';
 
-test('it can initiate game instance', () => {
-  let canvas = document.createElement("canvas");
-  let context = canvas.getContext("2d");
-  const game = new Game(canvas, context);
 
-  expect(game).toBeTruthy();
-  expect(game).not.toBeNull();
-  expect(game).toBeInstanceOf(Game);
+describe("Gameloop working correctly", () => {
+  let canvas;
+  let context;
+  let game;
+  beforeEach(() => {
+    canvas = document.createElement("canvas");
+    context = canvas.getContext("2d");
+    game = new Game(canvas, context);
+  })
+
+  test('it can initiate game instance', () => {
+    expect(game).toBeTruthy();
+    expect(game).not.toBeNull();
+    expect(game).toBeInstanceOf(Game);
+  });
+  
+  
+
 });
