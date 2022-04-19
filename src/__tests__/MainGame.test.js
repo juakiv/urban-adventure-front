@@ -1,5 +1,6 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import MainGame from '../MainGame';
+import { shallow } from 'enzyme';
 
 describe("it renders correct content", () => {
     
@@ -16,6 +17,7 @@ describe("it renders correct content", () => {
     });
 
     test("it renders correct part when game is running", () => {
-        
+        const mainGameWrapper = shallow( <MainGame/>);
+        console.log(mainGameWrapper.debug());
     });
 });
