@@ -26,6 +26,11 @@ const MainGame = props => {
     const [isPaused, setIsPaused] = useState(false);
     const [currentMenu, setCurrentMenu] = useState("main");
     
+    const handleDeath = () => {
+        setIsGameRunning(false);
+        setIsPaused(false);
+        setCurrentMenu("death");
+    }
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -37,14 +42,27 @@ const MainGame = props => {
         if(context != null) {
             setGame(new Game(canvas, context));
 
-            window.addEventListener("death-event", () => {
-                setIsGameRunning(false);
-                setIsPaused(false);
-                setCurrentMenu("death");
-            });
+            window.addEventListener("death-event", handleDeath);
+        }
+
+        return () => {
+            window.removeEventListener("death-event", handleDeath);
         }
         
     }, [reconnect]);
+
+    const closeHandling = (e) => {
+        setConnecting(true);
+            setSocket(null);
+
+            clearInterval(pingPong);
+            setPingPong(null);
+            
+            if(reconnectCounter < 5) {
+                setReconnectCounter(counter => counter + 1);
+                setReconnect(new Date());
+            }
+    }
 
     useEffect(() => {
         if(!socket) return false;
@@ -75,22 +93,13 @@ const MainGame = props => {
         
         // koitetaan yhdistää uudelleen 5 kertaa,
         // jos yhteys katkeaa
-        socket.addEventListener("close", _e => {
-            setConnecting(true);
-            setSocket(null);
-
-            clearInterval(pingPong);
-            setPingPong(null);
-            
-            if(reconnectCounter < 5) {
-                setReconnectCounter(counter => counter + 1);
-                setReconnect(new Date());
-            }
-        });
+        socket.addEventListener("close", closeHandling);
 
         return () => {
-            // This is the cleanup function
+            //This is the cleanup function
+            socket.removeEventListener("close", closeHandling);
             socket.removeEventListener("open", setReconnectCounter);
+            
           }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [socket]);
