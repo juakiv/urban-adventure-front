@@ -182,6 +182,10 @@ class Level {
   isInPlatformsRange(x) {
     for(let i = 0; i < this.#platforms.length; i++) {
       if((x + 40 > this.#platforms[i].getX()) && (x < (this.#platforms[i].getX()+this.#platforms[i].getWidth()))) {
+        // auttaa käsittelemään viereisen platformin seinään törmäämisen oikein
+        if((i+1 < this.#platforms.length) && (x + 40 > this.#platforms[i+1].getX())) { 
+          return i+1;
+        }
         return i;
       }
     }
@@ -251,7 +255,7 @@ class Level {
       return false;
     }
     // onko x:n suunnassa Platformin kohdalla
-    const pIdx = this.isInPlatformsRange(x)
+    const pIdx = this.isInPlatformsRange(x);
     if(pIdx !== null) {
       // onko platformin alapuolella
       if((this.#platforms[pIdx].getY() < y) && (this.#platforms[pIdx].getY() < this.#lastY)) {
