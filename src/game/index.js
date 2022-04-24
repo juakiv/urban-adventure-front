@@ -153,7 +153,7 @@ class Game {
     this.#character.update(this.#hasBeenOnTheGround, charYPos);    
 
     //pelin pysäytys
-    if(((this.#character.getPosY()) > this.#canvas.height) || (this.#lvl.ranToAWall(10 + 15, this.#character.getPosY() + 120 ))) {
+    if(((this.#character.getPosY()) > this.#canvas.height) || (this.#lvl.ranToAWall(10, this.#character.getPosY() + 120 ))) {
       this.#hasEnded = true;
       this.#score = 0;
       window.dispatchEvent(new Event("death-event"));
