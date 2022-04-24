@@ -179,7 +179,7 @@ describe("Level functionality", () => {
     test("Is above a platform", () => {
         expect(lvl.isAboveAPlatform(50, canvas.height - 200)).toBe(1);
         expect(lvl.isAboveAPlatform(50, canvas.height - 50)).toBe(0);
-        expect(lvl.isAboveAPlatform(-35, canvas.height - 200)).toBe(-1);
+        expect(lvl.isAboveAPlatform(-40, canvas.height - 200)).toBe(-1);
     });
 
     test("ran to a wall", () => {

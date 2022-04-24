@@ -181,7 +181,7 @@ class Level {
   
   isInPlatformsRange(x) {
     for(let i = 0; i < this.#platforms.length; i++) {
-      if((x + 30 > this.#platforms[i].getX()) && (x < (this.#platforms[i].getX()+this.#platforms[i].getWidth()))) {
+      if((x + 40 > this.#platforms[i].getX()) && (x < (this.#platforms[i].getX()+this.#platforms[i].getWidth()))) {
         return i;
       }
     }
