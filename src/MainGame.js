@@ -51,7 +51,7 @@ const MainGame = props => {
         
     }, [reconnect]);
 
-    const closeHandling = (e) => {
+    const closeHandling = () => {
         setConnecting(true);
             setSocket(null);
 
